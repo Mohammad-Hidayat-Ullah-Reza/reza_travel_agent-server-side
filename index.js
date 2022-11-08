@@ -18,6 +18,9 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const fakeDataCollection = client.db("travelReview").collection("fakeData");
+    const fakeReviewCollection = client
+      .db("travelReview")
+      .collection("fakeReview");
 
     // get last 3 data only
     app.get("/fake", async (req, res) => {
@@ -42,6 +45,12 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const service = await fakeDataCollection.findOne(query);
       res.send(service);
+    });
+
+    app.post("/review", async (req, res) => {
+      const doc = req.body;
+      const review = await fakeReviewCollection.insertOne(doc);
+      res.send(review);
     });
   } finally {
   }
