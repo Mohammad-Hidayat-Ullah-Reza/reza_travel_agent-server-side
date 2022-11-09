@@ -77,11 +77,38 @@ async function run() {
     });
 
     //delete reviews from my review
-    app.delete("/reviews/:id", async (req, res) => {
+    app.delete("/deleteReviews/:id", async (req, res) => {
       const reviewId = req.params.id;
       const query = { _id: ObjectId(reviewId) };
       const deleteReview = await fakeReviewCollection.deleteOne(query);
       res.send(deleteReview);
+    });
+
+    //get individual reviews by id
+    app.get("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const getReview = await fakeReviewCollection.findOne(query);
+      res.send(getReview);
+    });
+
+    //update a review
+    app.put("/updateReview/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const doc = req.body;
+      const updateDoc = {
+        $set: {
+          review: doc.review,
+        },
+      };
+      const options = { upsert: true };
+      const result = await fakeReviewCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
   } finally {
   }
