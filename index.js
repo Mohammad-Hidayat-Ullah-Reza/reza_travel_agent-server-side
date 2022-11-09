@@ -33,6 +33,7 @@ async function run() {
       res.send(result);
     });
 
+    //get all services data
     app.get("/services", async (req, res) => {
       const query = {};
       const cursor = fakeDataCollection.find(query);
@@ -40,6 +41,7 @@ async function run() {
       res.send(services);
     });
 
+    //get specific services data
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -47,10 +49,20 @@ async function run() {
       res.send(service);
     });
 
+    //insert data in review
     app.post("/review", async (req, res) => {
       const doc = req.body;
       const review = await fakeReviewCollection.insertOne(doc);
       res.send(review);
+    });
+
+    //get all data from review
+    app.get("/reviews/:serviceId", async (req, res) => {
+      const serviceId = req.params.serviceId;
+      const query = { serviceId: serviceId };
+      const cursor = fakeReviewCollection.find(query).sort({ _id: -1 });
+      const reviews = await cursor.toArray();
+      res.send(reviews);
     });
   } finally {
   }
