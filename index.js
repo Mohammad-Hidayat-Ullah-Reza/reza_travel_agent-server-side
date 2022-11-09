@@ -64,6 +64,15 @@ async function run() {
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
+
+    //get reviews data according to user
+    app.get("/myreviews/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = fakeReviewCollection.find(query).sort({ _id: -1 });
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
   } finally {
   }
 }
