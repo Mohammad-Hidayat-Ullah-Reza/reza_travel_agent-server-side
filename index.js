@@ -49,6 +49,13 @@ async function run() {
       res.send(service);
     });
 
+    //add a new service
+    app.post("/addService", async (req, res) => {
+      const doc = req.body;
+      const addService = await fakeDataCollection.insertOne(doc);
+      res.send(addService);
+    });
+
     //insert data in review
     app.post("/review", async (req, res) => {
       const doc = req.body;
