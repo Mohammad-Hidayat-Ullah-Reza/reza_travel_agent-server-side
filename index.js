@@ -66,12 +66,22 @@ async function run() {
     });
 
     //get reviews data according to user
-    app.get("/myreviews/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
+    app.get("/reviews", async (req, res) => {
+      let query = {};
+      if (req.query.email) {
+        query = { email: req.query.email };
+      }
       const cursor = fakeReviewCollection.find(query).sort({ _id: -1 });
       const reviews = await cursor.toArray();
       res.send(reviews);
+    });
+
+    //delete reviews from my review
+    app.delete("/reviews/:id", async (req, res) => {
+      const reviewId = req.params.id;
+      const query = { _id: ObjectId(reviewId) };
+      const deleteReview = await fakeReviewCollection.deleteOne(query);
+      res.send(deleteReview);
     });
   } finally {
   }
