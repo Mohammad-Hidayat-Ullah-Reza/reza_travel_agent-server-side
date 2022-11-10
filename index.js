@@ -45,6 +45,8 @@ async function run() {
 
     const flightCollection = client.db("travelReview").collection("flightData");
 
+    const blogCollection = client.db("travelReview").collection("blogData");
+
     app.post("/jwt", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -157,6 +159,13 @@ async function run() {
     app.get("/flights", async (req, res) => {
       const query = {};
       const cursor = flightCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/blog", async (req, res) => {
+      const query = {};
+      const cursor = blogCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     });
