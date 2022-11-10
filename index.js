@@ -39,9 +39,7 @@ async function run() {
       .db("travelReview")
       .collection("serviceData");
 
-    const fakeReviewCollection = client
-      .db("travelReview")
-      .collection("fakeReview");
+    const reviewCollection = client.db("travelReview").collection("reviewData");
 
     const flightCollection = client.db("travelReview").collection("flightData");
 
@@ -56,7 +54,7 @@ async function run() {
     });
 
     // get last 3 data only
-    app.get("/fake", async (req, res) => {
+    app.get("/three", async (req, res) => {
       const query = {};
       const cursor = serviceDataCollection
         .find(query)
@@ -92,7 +90,7 @@ async function run() {
     //insert data in review
     app.post("/review", async (req, res) => {
       const doc = req.body;
-      const review = await fakeReviewCollection.insertOne(doc);
+      const review = await reviewCollection.insertOne(doc);
       res.send(review);
     });
 
@@ -100,7 +98,7 @@ async function run() {
     app.get("/reviews/:serviceId", async (req, res) => {
       const serviceId = req.params.serviceId;
       const query = { serviceId: serviceId };
-      const cursor = fakeReviewCollection.find(query).sort({ _id: -1 });
+      const cursor = reviewCollection.find(query).sort({ dateAndTime: -1 });
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
@@ -116,7 +114,7 @@ async function run() {
       if (req.query.email) {
         query = { email: req.query.email };
       }
-      const cursor = fakeReviewCollection.find(query).sort({ _id: -1 });
+      const cursor = reviewCollection.find(query).sort({ _id: -1 });
       const reviews = await cursor.toArray();
       res.send(reviews);
     });
@@ -125,7 +123,7 @@ async function run() {
     app.delete("/deleteReviews/:id", async (req, res) => {
       const reviewId = req.params.id;
       const query = { _id: ObjectId(reviewId) };
-      const deleteReview = await fakeReviewCollection.deleteOne(query);
+      const deleteReview = await reviewCollection.deleteOne(query);
       res.send(deleteReview);
     });
 
@@ -133,7 +131,7 @@ async function run() {
     app.get("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const getReview = await fakeReviewCollection.findOne(query);
+      const getReview = await reviewCollection.findOne(query);
       res.send(getReview);
     });
 
@@ -148,7 +146,7 @@ async function run() {
         },
       };
       const options = { upsert: true };
-      const result = await fakeReviewCollection.updateOne(
+      const result = await reviewCollection.updateOne(
         filter,
         updateDoc,
         options
