@@ -35,10 +35,15 @@ function verifyJWT(req, res, next) {
 
 async function run() {
   try {
-    const fakeDataCollection = client.db("travelReview").collection("fakeData");
+    const serviceDataCollection = client
+      .db("travelReview")
+      .collection("serviceData");
+
     const fakeReviewCollection = client
       .db("travelReview")
       .collection("fakeReview");
+
+    const flightCollection = client.db("travelReview").collection("flightData");
 
     app.post("/jwt", (req, res) => {
       const user = req.body;
@@ -51,7 +56,7 @@ async function run() {
     // get last 3 data only
     app.get("/fake", async (req, res) => {
       const query = {};
-      const cursor = fakeDataCollection
+      const cursor = serviceDataCollection
         .find(query)
         .sort({ _id: -1 })
         .limit(3, function (e, d) {});
@@ -62,7 +67,7 @@ async function run() {
     //get all services data
     app.get("/services", async (req, res) => {
       const query = {};
-      const cursor = fakeDataCollection.find(query);
+      const cursor = serviceDataCollection.find(query);
       const services = await cursor.toArray();
       res.send(services);
     });
@@ -71,14 +76,14 @@ async function run() {
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const service = await fakeDataCollection.findOne(query);
+      const service = await serviceDataCollection.findOne(query);
       res.send(service);
     });
 
     //add a new service
     app.post("/addService", async (req, res) => {
       const doc = req.body;
-      const addService = await fakeDataCollection.insertOne(doc);
+      const addService = await serviceDataCollection.insertOne(doc);
       res.send(addService);
     });
 
@@ -146,6 +151,13 @@ async function run() {
         updateDoc,
         options
       );
+      res.send(result);
+    });
+
+    app.get("/flights", async (req, res) => {
+      const query = {};
+      const cursor = flightCollection.find(query);
+      const result = await cursor.toArray();
       res.send(result);
     });
   } finally {
